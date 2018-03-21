@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -41,6 +42,8 @@ public class DishIngredientAndSteps extends AppCompatActivity {
         ingredients = (Ingredients[]) intent.getSerializableExtra("dish_ingredients");
         steps = (Steps[]) intent.getSerializableExtra("dish_steps");
 
+        showLog();
+
         attachIngredientsToList();
 
         ingredientsCard.setOnClickListener(new View.OnClickListener() {
@@ -58,6 +61,21 @@ public class DishIngredientAndSteps extends AppCompatActivity {
         stepsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
         addStepsToRecyclerView();
+    }
+
+    private void showLog(){
+        String[] videoUrl = new String[steps.length];
+        String[] stepDescription = new String[steps.length];
+
+        for (int i = 0; i < steps.length; i++){
+            videoUrl[i] = steps[i].getVideoURL();
+            stepDescription[i] = steps[i].getDescription();
+            if (videoUrl[i].equals(null) || videoUrl[i].equals(""))
+                videoUrl[i] = "0";
+
+            Log.d("Video " + i, videoUrl[i]);
+            Log.d("Step Description " + i, stepDescription[i]);
+        }
     }
 
     private void attachIngredientsToList() {

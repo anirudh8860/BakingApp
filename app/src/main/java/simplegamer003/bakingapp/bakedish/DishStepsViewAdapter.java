@@ -77,9 +77,9 @@ public class DishStepsViewAdapter extends RecyclerView.Adapter<DishStepsViewAdap
         }
 
         Intent dishStepIntent = new Intent(context, DishStepDetail.class);
+        dishStepIntent.putExtra("position", position);
         dishStepIntent.putExtra("video_url", videoUrl);
         dishStepIntent.putExtra("step_description", stepDescription);
-        dishStepIntent.putExtra("position", position);
         context.startActivity(dishStepIntent);
     }
 }

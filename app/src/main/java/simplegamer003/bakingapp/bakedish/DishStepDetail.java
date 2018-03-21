@@ -34,8 +34,4 @@ public class DishStepDetail extends AppCompatActivity {
         data.putInt("position", position);
         dishStepDetailFragment.setArguments(data);
     }
-
-    public interface OnDataPassedListener {
-        void onDataPassed(String[] videoUrl, String[] stepDescription, int position);
-    }
 }

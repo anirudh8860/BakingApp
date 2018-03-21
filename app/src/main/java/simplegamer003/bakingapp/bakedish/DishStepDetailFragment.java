@@ -7,12 +7,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.support.v4.media.session.MediaSessionCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -21,13 +20,12 @@ import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.RenderersFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
 import simplegamer003.bakingapp.R;
@@ -35,15 +33,19 @@ import simplegamer003.bakingapp.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class DishStepDetailFragment extends Fragment implements DishStepDetail.OnDataPassedListener {
+public class DishStepDetailFragment extends Fragment {
 
-    TextView stepDesc;
-    String[] videoUrl, stepDescription;
-    int position, finalposition;
-    DishStepDetail dishStepDetail;
-    Button prev, next;
-    SimpleExoPlayer exoPlayer;
-    SimpleExoPlayerView exoPlayerView;
+    private TextView stepDesc;
+    private String[] videoUrl, stepDescription;
+    private int position, finalposition;
+    private DishStepDetail dishStepDetail;
+    private Button prev, next;
+    private SimpleExoPlayer exoPlayer;
+    private SimpleExoPlayerView exoPlayerView;
+    private long playbackPos;
+    private int windowIndex;
+    private boolean playWhenReady;
+    private ComponentListener componentListener;
 
     public DishStepDetailFragment() {
         // Required empty public constructor
@@ -79,6 +81,7 @@ public class DishStepDetailFragment extends Fragment implements DishStepDetail.O
                 checkForFirstPosition(position);
                 checkForFinalPosition(position);
                 stepDesc.setText(stepDescription[position]);
+                componentListener = new ComponentListener();
                 showOrHideVideo(videoUrl[position]);
             }
         }, 100);
@@ -119,17 +122,31 @@ public class DishStepDetailFragment extends Fragment implements DishStepDetail.O
                 , trackSelector
                 , loadControl);
         exoPlayerView.setPlayer(exoPlayer);
-        String userAgent = Util.getUserAgent(context, getString(R.string.app_name));
-        MediaSource mediaSource = new ExtractorMediaSource(uri, new DefaultDataSourceFactory(context, userAgent), new DefaultExtractorsFactory(), null, null);
-        exoPlayer.prepare(mediaSource);
-        exoPlayer.setPlayWhenReady(true);
+        DefaultHttpDataSourceFactory dataSource = new DefaultHttpDataSourceFactory(
+                Util.getUserAgent(context, getString(R.string.app_name)));
+        MediaSource mediaSource = new ExtractorMediaSource.Factory(dataSource)
+                .createMediaSource(uri
+                        , null
+                        , null);
+        exoPlayer.addListener(componentListener);
+        exoPlayer.addVideoDebugListener(componentListener);
+        exoPlayer.addAudioDebugListener(componentListener);
+        exoPlayer.prepare(mediaSource, false, false);
+        exoPlayer.setPlayWhenReady(playWhenReady);
+        exoPlayer.seekTo(windowIndex, playbackPos);
 
     }
 
     private void releasePlayer(){
-        exoPlayer.stop();
-        exoPlayer.release();
-        exoPlayer = null;
+        if (exoPlayer != null){
+            playbackPos = exoPlayer.getCurrentPosition();
+            windowIndex = exoPlayer.getCurrentWindowIndex();
+            playWhenReady = exoPlayer.getPlayWhenReady();
+            exoPlayer.removeListener(componentListener);
+            exoPlayer.stop();
+            exoPlayer.release();
+            exoPlayer = null;
+        }
     }
 
     @Override
@@ -177,28 +194,52 @@ public class DishStepDetailFragment extends Fragment implements DishStepDetail.O
             next.setEnabled(true);
     }
 
-    private void showOrHideVideo(String videoUrl){
-        boolean noVideo = checkForNoVideo(videoUrl);
+    private void showOrHideVideo(String videoUrlStr){
+        boolean noVideo = checkForNoVideo(videoUrlStr);
         if (noVideo)
             exoPlayerView.setVisibility(View.GONE);
         else {
             exoPlayerView.setVisibility(View.VISIBLE);
-            initializePlayer(Uri.parse(videoUrl));
+            initializePlayer(Uri.parse(videoUrlStr));
         }
     }
 
-    private boolean checkForNoVideo(String videoUrl) {
-        if (videoUrl.equals("0"))
+    private boolean checkForNoVideo(String videoUrlStr) {
+        if (videoUrlStr.equals("0"))
             return true;
         else
             return false;
     }
 
+
     @Override
-    public void onDataPassed(String[] videoUrl, String[] stepDescription, int position) {
-        this.videoUrl = videoUrl;
-        this.stepDescription = stepDescription;
-        this.position = position;
+    public void onStart() {
+        super.onStart();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                showOrHideVideo(videoUrl[position]);
+            }
+        }, 100);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        releasePlayer();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (exoPlayer == null) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    showOrHideVideo(videoUrl[position]);
+                }
+            }, 100);
+        }
     }
 
     @Override
