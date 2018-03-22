@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="simplegamer003.bakingapp">
 
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:allowBackup="true"
@@ -18,8 +19,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".bakedish.DishIngredientAndSteps" />
-        <activity android:name=".bakedish.DishStepDetail"></activity>
+        <activity
+            android:name=".bakedish.DishIngredientAndSteps"
+            android:configChanges="orientation"/>
+        <activity
+            android:name=".bakedish.DishStepDetail"/>
     </application>
 
 </manifest>

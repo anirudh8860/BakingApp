@@ -3,22 +3,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="simplegamer003.bakingapp.bakedish.DishStepDetailFragment">
+    tools:context="simplegamer003.bakingapp.bakedish.DishStepDetailFragment"
+    android:id="@+id/dish_detail_fragment">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:id="@+id/player_scroll_view">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/player_linear_layout"
             android:orientation="vertical">
 
             <com.google.android.exoplayer2.ui.SimpleExoPlayerView
                 android:id="@+id/step_video_player"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="300dp"
                 android:layout_weight="1"
                 android:background="#000000"/>
 

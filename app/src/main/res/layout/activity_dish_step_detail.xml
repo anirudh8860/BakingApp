@@ -4,12 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="simplegamer003.bakingapp.bakedish.DishStepDetail"
-    android:orientation="vertical">
-
+    android:id="@+id/dish_linear_layout">
     <fragment
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:id="@+id/dish_step_fragment"
         android:layout_weight="1"
         class="simplegamer003.bakingapp.bakedish.DishStepDetailFragment"/>

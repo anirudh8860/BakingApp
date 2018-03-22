@@ -1,6 +1,9 @@
 package simplegamer003.bakingapp;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,6 +11,8 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -22,6 +27,8 @@ public class Home extends AppCompatActivity {
             "https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json";
     private DishViewAdapter adapter;
     private RecyclerView recyclerView;
+    private TextView notConnectedText;
+    private Button retryButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,10 +36,29 @@ public class Home extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         recyclerView = (RecyclerView) findViewById(R.id.dish_recycler_view);
+        notConnectedText = (TextView) findViewById(R.id.not_connected_text);
+        retryButton = (Button) findViewById(R.id.check_conn_btn);
 
-        new FetchDish().execute(requestUrl);
+        displayCards();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+    }
+
+    private void displayCards() {
+        if (isNetworkAvailable()) {
+            notConnectedText.setVisibility(View.GONE);
+            retryButton.setVisibility(View.GONE);
+            new FetchDish().execute(requestUrl);
+        }
+        else
+            notConnectedText.setText(R.string.not_connected_text);
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     class FetchDish extends AsyncTask<String, Void, String>{
