@@ -2,11 +2,13 @@ package simplegamer003.bakingapp.moshihelper;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by anirudhsohil on 12/03/18.
  */
 
-public class Dish {
+public class Dish implements Serializable{
 
     private int id;
     private String name;

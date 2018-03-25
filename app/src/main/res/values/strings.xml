@@ -9,4 +9,5 @@
     <string name="not_connected_text">Not connected, please retry</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
+    <string name="refresh_unsuccessful">Cannot refresh at this time</string>
 </resources>
