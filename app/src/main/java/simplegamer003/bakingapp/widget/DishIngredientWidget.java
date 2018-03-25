@@ -51,8 +51,6 @@ public class DishIngredientWidget extends AppWidgetProvider {
         for (int appWidgetId : appWidgetIds) {
             RemoteViews remoteViews = updateWidgetListView(context, appWidgetId);
             appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
-
-            updateAppWidget(context, appWidgetManager, appWidgetId);git
         }
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
