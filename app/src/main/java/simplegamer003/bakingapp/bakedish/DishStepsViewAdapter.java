@@ -2,6 +2,9 @@ package simplegamer003.bakingapp.bakedish;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,7 +45,20 @@ public class DishStepsViewAdapter extends RecyclerView.Adapter<DishStepsViewAdap
         holder.shortDescriptionTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openDishStep(position);
+                if (context.getResources().getBoolean(R.bool.isTablet)){
+                    Bundle args = new Bundle();
+                    args.putInt("position", position);
+                    DishStepDetailFragment fragment = new DishStepDetailFragment();
+                    fragment.setArguments(args);
+                    FragmentManager fragmentManager = ((DishIngredientAndSteps) context).getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.dish_ingredient_detail_fragment, fragment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                }
+                else {
+                    openDishStep(position);
+                }
             }
         });
     }
@@ -52,7 +68,7 @@ public class DishStepsViewAdapter extends RecyclerView.Adapter<DishStepsViewAdap
         return shortDescription.length;
     }
 
-    public class StepsViewHolder extends RecyclerView.ViewHolder {
+    public class StepsViewHolder extends RecyclerView.ViewHolder{
 
         TextView shortDescriptionTextView;
 

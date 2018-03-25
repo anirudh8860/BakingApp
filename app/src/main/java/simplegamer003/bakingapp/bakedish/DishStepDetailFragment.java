@@ -37,6 +37,8 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
 import simplegamer003.bakingapp.R;
+import simplegamer003.bakingapp.moshihelper.Dish;
+import simplegamer003.bakingapp.moshihelper.Ingredients;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,11 +49,12 @@ public class DishStepDetailFragment extends Fragment {
     private String[] videoUrl, stepDescription;
     private int position, finalposition, windowIndex, resumeWindow;
     private DishStepDetail dishStepDetail;
+    private DishIngredientAndSteps ingredientAndSteps;
     private Button prev, next;
     private SimpleExoPlayer exoPlayer;
     private SimpleExoPlayerView exoPlayerView;
     private long playbackPos, resumePosition;
-    private boolean playWhenReady;
+    private boolean playWhenReady, isTablet;
     private ComponentListener componentListener;
     private View stepDescView;
     private RelativeLayout prevNextFragment;
@@ -64,7 +67,8 @@ public class DishStepDetailFragment extends Fragment {
     private ImageButton fullScreenBtn;
     private FrameLayout frameLayout;
     private LayoutInflater inflater;
-    int orientation;
+    private int orientation;
+    private Context context;
 
     public DishStepDetailFragment() {
         // Required empty public constructor
@@ -77,8 +81,14 @@ public class DishStepDetailFragment extends Fragment {
         this.inflater = inflater;
         frameLayout = new FrameLayout(getActivity());
         stepDescView = inflater.inflate(R.layout.fragment_dish_step_detail, container, false);
+        context = getActivity().getApplicationContext();
+        isTablet = context.getResources().getBoolean(R.bool.isTablet);
 
-        dishStepDetail= (DishStepDetail) getActivity();
+        if (isTablet)
+            ingredientAndSteps = (DishIngredientAndSteps) getActivity();
+        else
+            dishStepDetail= (DishStepDetail) getActivity();
+
         stepDesc = stepDescView.findViewById(R.id.step_desc);
         prev = stepDescView.findViewById(R.id.prev);
         next = stepDescView.findViewById(R.id.next);
@@ -86,32 +96,62 @@ public class DishStepDetailFragment extends Fragment {
         prevNextFragment = stepDescView.findViewById(R.id.prev_next_layout);
         orientation = getActivity().getResources().getConfiguration().orientation;
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (savedInstanceState != null){
-                    position = savedInstanceState.getInt(positionKey);
-                    resumeWindow = savedInstanceState.getInt(STATE_RESUME_WINDOW);
-                    resumePosition = savedInstanceState.getLong(STATE_RESUME_POSITION);
-                    exoPlayerFullscreen = savedInstanceState.getBoolean(STATE_PLAYER_FULLSCREEN);
+        if (isTablet){
+            Bundle bundle = getArguments();
+            position = bundle.getInt("position");
+            prev.setVisibility(View.GONE);
+            next.setVisibility(View.GONE);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (savedInstanceState != null) {
+                        position = savedInstanceState.getInt(positionKey);
+                        resumeWindow = savedInstanceState.getInt(STATE_RESUME_WINDOW);
+                        resumePosition = savedInstanceState.getLong(STATE_RESUME_POSITION);
+                        exoPlayerFullscreen = savedInstanceState.getBoolean(STATE_PLAYER_FULLSCREEN);
+                    }
+                    videoUrl = ingredientAndSteps.videoUrl;
+                    stepDescription = ingredientAndSteps.stepDescription;
+                    finalposition = stepDescription.length - 1;
+                    checkForFirstPosition(position);
+                    checkForFinalPosition(position);
+                    stepDesc.setText(stepDescription[position]);
+                    componentListener = new ComponentListener();
+                    showOrHideVideo(videoUrl[position]);
+                    initFullScreenDialog();
+                    initFullScreenButton();
+                    if (orientation == Configuration.ORIENTATION_LANDSCAPE)
+                        openFullScreenDialog();
                 }
-                else {
-                    position = dishStepDetail.position;
+            }, 100);
+        }
+        else {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (savedInstanceState != null) {
+                        position = savedInstanceState.getInt(positionKey);
+                        resumeWindow = savedInstanceState.getInt(STATE_RESUME_WINDOW);
+                        resumePosition = savedInstanceState.getLong(STATE_RESUME_POSITION);
+                        exoPlayerFullscreen = savedInstanceState.getBoolean(STATE_PLAYER_FULLSCREEN);
+                    } else {
+                        position = dishStepDetail.position;
+                    }
+                    videoUrl = dishStepDetail.videoUrl;
+                    stepDescription = dishStepDetail.stepDescription;
+                    finalposition = stepDescription.length - 1;
+                    checkForFirstPosition(position);
+                    checkForFinalPosition(position);
+                    stepDesc.setText(stepDescription[position]);
+                    componentListener = new ComponentListener();
+                    showOrHideVideo(videoUrl[position]);
+                    initFullScreenDialog();
+                    initFullScreenButton();
+                    if (orientation == Configuration.ORIENTATION_LANDSCAPE)
+                        openFullScreenDialog();
                 }
-                videoUrl = dishStepDetail.videoUrl;
-                stepDescription = dishStepDetail.stepDescription;
-                finalposition = stepDescription.length - 1;
-                checkForFirstPosition(position);
-                checkForFinalPosition(position);
-                stepDesc.setText(stepDescription[position]);
-                componentListener = new ComponentListener();
-                showOrHideVideo(videoUrl[position]);
-                initFullScreenDialog();
-                initFullScreenButton();
-                if (orientation == Configuration.ORIENTATION_LANDSCAPE)
-                    openFullScreenDialog();
-            }
-        }, 100);
+            }, 100);
+        }
 
         prev.setOnClickListener(new View.OnClickListener() {
             @Override

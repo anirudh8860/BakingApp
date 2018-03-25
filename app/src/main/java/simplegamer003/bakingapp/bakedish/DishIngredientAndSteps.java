@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.ScrollView;
 
 import simplegamer003.bakingapp.R;
 import simplegamer003.bakingapp.moshihelper.Ingredients;
@@ -26,6 +25,7 @@ public class DishIngredientAndSteps extends AppCompatActivity {
     private Ingredients[] ingredients;
     private Steps[] steps;
     private ViewGroup parent;
+    String[] videoUrl, stepDescription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +42,7 @@ public class DishIngredientAndSteps extends AppCompatActivity {
         ingredients = (Ingredients[]) intent.getSerializableExtra("dish_ingredients");
         steps = (Steps[]) intent.getSerializableExtra("dish_steps");
 
-        showLog();
+        createDishDataArray();
 
         attachIngredientsToList();
 
@@ -63,9 +63,9 @@ public class DishIngredientAndSteps extends AppCompatActivity {
         addStepsToRecyclerView();
     }
 
-    private void showLog(){
-        String[] videoUrl = new String[steps.length];
-        String[] stepDescription = new String[steps.length];
+    private void createDishDataArray(){
+        videoUrl = new String[steps.length];
+        stepDescription = new String[steps.length];
 
         for (int i = 0; i < steps.length; i++){
             videoUrl[i] = steps[i].getVideoURL();
