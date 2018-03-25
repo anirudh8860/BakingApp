@@ -53,7 +53,6 @@ public class DishStepsViewAdapter extends RecyclerView.Adapter<DishStepsViewAdap
                     FragmentManager fragmentManager = ((DishIngredientAndSteps) context).getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.dish_ingredient_detail_fragment, fragment);
-                    fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.commit();
                 }
                 else {

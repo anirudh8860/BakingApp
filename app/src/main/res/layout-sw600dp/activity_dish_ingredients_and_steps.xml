@@ -51,21 +51,32 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/ingredients_card"
             android:orientation="horizontal">
 
             <android.support.v7.widget.RecyclerView
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
+                android:layout_width="300dp"
+                android:layout_height="match_parent"
                 android:id="@+id/steps_recycler_view"/>
 
-            <FrameLayout
-                android:layout_width="fill_parent"
+            <View
+                android:layout_width="2dp"
                 android:layout_height="match_parent"
+                android:background="#A7A7A7"/>
+
+            <FrameLayout
+                android:layout_marginLeft="10dp"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
                 android:id="@+id/dish_ingredient_detail_fragment"/>
 
         </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#A7A7A7"/>
 
     </RelativeLayout>
 </ScrollView>

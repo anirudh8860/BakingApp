@@ -4,6 +4,8 @@ package simplegamer003.bakingapp.bakedish;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -50,7 +52,7 @@ public class DishStepDetailFragment extends Fragment {
     private int position, finalposition, windowIndex, resumeWindow;
     private DishStepDetail dishStepDetail;
     private DishIngredientAndSteps ingredientAndSteps;
-    private Button prev, next;
+    private Button prev, next, retryButton;
     private SimpleExoPlayer exoPlayer;
     private SimpleExoPlayerView exoPlayerView;
     private long playbackPos, resumePosition;
@@ -84,23 +86,77 @@ public class DishStepDetailFragment extends Fragment {
         context = getActivity().getApplicationContext();
         isTablet = context.getResources().getBoolean(R.bool.isTablet);
 
-        if (isTablet)
-            ingredientAndSteps = (DishIngredientAndSteps) getActivity();
-        else
-            dishStepDetail= (DishStepDetail) getActivity();
-
         stepDesc = stepDescView.findViewById(R.id.step_desc);
         prev = stepDescView.findViewById(R.id.prev);
         next = stepDescView.findViewById(R.id.next);
         exoPlayerView = stepDescView.findViewById(R.id.step_video_player);
         prevNextFragment = stepDescView.findViewById(R.id.prev_next_layout);
         orientation = getActivity().getResources().getConfiguration().orientation;
+        retryButton = stepDescView.findViewById(R.id.check_conn_btn_frag);
+
+        setView(savedInstanceState);
+
+        prev.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getPrev();
+                }
+            });
+
+        next.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getNext();
+                }
+            });
+
+        retryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setView(savedInstanceState);
+            }
+        });
+
+        return stepDescView;
+    }
+
+    private void setView(Bundle savedInstanceState){
+        if (isNetworkAvailable()){
+            setVisibilityOfConnected();
+            showStepAndVideo(savedInstanceState);
+        }
+        else {
+            setVisibilityOfNotConnected();
+            stepDesc.setText(context.getString(R.string.not_connected_text));
+        }
 
         if (isTablet){
-            Bundle bundle = getArguments();
-            position = bundle.getInt("position");
             prev.setVisibility(View.GONE);
             next.setVisibility(View.GONE);
+        }
+        else {
+            prev.setVisibility(View.VISIBLE);
+            next.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void setVisibilityOfNotConnected() {
+        retryButton.setVisibility(View.VISIBLE);
+        exoPlayerView.setVisibility(View.GONE);
+    }
+
+    private void setVisibilityOfConnected(){
+        retryButton.setVisibility(View.GONE);
+        exoPlayerView.setVisibility(View.VISIBLE);
+    }
+
+    private void showStepAndVideo(final Bundle savedInstanceState){
+        if (isTablet){
+            ingredientAndSteps = (DishIngredientAndSteps) getActivity();
+            prev.setVisibility(View.GONE);
+            next.setVisibility(View.GONE);
+            Bundle bundle = getArguments();
+            position = bundle.getInt("position");
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -126,6 +182,7 @@ public class DishStepDetailFragment extends Fragment {
             }, 100);
         }
         else {
+            dishStepDetail = (DishStepDetail) getActivity();
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -152,22 +209,6 @@ public class DishStepDetailFragment extends Fragment {
                 }
             }, 100);
         }
-
-        prev.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getPrev();
-            }
-        });
-
-        next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getNext();
-            }
-        });
-
-        return stepDescView;
     }
 
     private void initializePlayer(Uri uri) {
@@ -336,25 +377,41 @@ public class DishStepDetailFragment extends Fragment {
             return false;
     }
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
 
     @Override
     public void onStart() {
         super.onStart();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                initFullScreenButton();
-                initFullScreenDialog();
-                showOrHideVideo(videoUrl[position]);
-
-                if (exoPlayerFullscreen) {
-                    ((ViewGroup) exoPlayerView.getParent()).removeView(exoPlayerView);
-                    fullScreenDialog.addContentView(exoPlayerView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                    fullScreenBtn.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.fullscreen_exit_white));
-                    fullScreenDialog.show();
-                }
+        if (isNetworkAvailable()) {
+            if (isTablet){
+                prev.setVisibility(View.GONE);
+                next.setVisibility(View.GONE);
             }
-        }, 100);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    initFullScreenButton();
+                    initFullScreenDialog();
+                    showOrHideVideo(videoUrl[position]);
+
+                    if (exoPlayerFullscreen) {
+                        ((ViewGroup) exoPlayerView.getParent()).removeView(exoPlayerView);
+                        fullScreenDialog.addContentView(exoPlayerView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                        fullScreenBtn.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.fullscreen_exit_white));
+                        fullScreenDialog.show();
+                    }
+                }
+            }, 100);
+        }
+        else {
+
+        }
     }
 
     @Override
@@ -375,12 +432,14 @@ public class DishStepDetailFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (exoPlayer == null) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    showOrHideVideo(videoUrl[position]);
-                }
-            }, 100);
+            if (isNetworkAvailable()) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        showOrHideVideo(videoUrl[position]);
+                    }
+                }, 100);
+            }
         }
     }
 

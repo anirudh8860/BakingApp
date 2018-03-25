@@ -42,6 +42,13 @@ public class Home extends AppCompatActivity {
         displayCards();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+
+        retryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayCards();
+            }
+        });
     }
 
     private void displayCards() {

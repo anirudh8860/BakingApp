@@ -32,6 +32,15 @@
                 android:layout_weight="1"
                 android:textSize="30sp" />
 
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:id="@+id/check_conn_btn_frag"
+                android:text="Retry"
+                android:background="@color/colorPrimaryDark"
+                android:textColor="#FFFFFF"/>
+
         </LinearLayout>
 
     </ScrollView>
