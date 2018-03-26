@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import me.anwarshahriar.calligrapher.Calligrapher;
 import simplegamer003.bakingapp.R;
 import simplegamer003.bakingapp.moshihelper.Steps;
 
@@ -25,17 +26,21 @@ public class DishStepsViewAdapter extends RecyclerView.Adapter<DishStepsViewAdap
     private Steps[] steps;
     private LayoutInflater inflater;
     private Context context;
+    private String name;
 
-    public DishStepsViewAdapter(Context context, String[] shortDescription, Steps[] steps){
+    public DishStepsViewAdapter(Context context, String[] shortDescription, Steps[] steps, String name){
         this.context = context;
         this.shortDescription = shortDescription;
         this.steps = steps;
+        this.name = name;
         inflater = LayoutInflater.from(context);
     }
 
     @Override
     public StepsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = inflater.inflate(R.layout.card_list_steps_item, parent, false);
+        Calligrapher calligrapher = new Calligrapher(context);
+        calligrapher.setFont(itemView, "fonts/blackjack.ttf");
         return new StepsViewHolder(itemView);
     }
 
@@ -92,6 +97,7 @@ public class DishStepsViewAdapter extends RecyclerView.Adapter<DishStepsViewAdap
         }
 
         Intent dishStepIntent = new Intent(context, DishStepDetail.class);
+        dishStepIntent.putExtra("dish_name", name);
         dishStepIntent.putExtra("position", position);
         dishStepIntent.putExtra("video_url", videoUrl);
         dishStepIntent.putExtra("step_description", stepDescription);

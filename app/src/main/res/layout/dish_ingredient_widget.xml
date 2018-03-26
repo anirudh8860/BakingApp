@@ -8,8 +8,10 @@
 
     <ListView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/ingredient_list_widget"/>
+        android:layout_height="match_parent"
+        android:id="@+id/ingredient_list_view_widget"
+        android:loopViews="true"
+        android:gravity="center" />
 
     <TextView
         android:id="@+id/empty_view"

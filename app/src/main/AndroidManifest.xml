@@ -20,9 +20,13 @@
             </intent-filter>
         </activity>
         <activity
+            android:label="@string/dish_ingredients_steps_title"
             android:name=".bakedish.DishIngredientAndSteps"
             android:configChanges="orientation" />
-        <activity android:name=".bakedish.DishStepDetail" />
+
+        <activity
+            android:name=".bakedish.DishStepDetail"
+            android:label="@string/dish_steps_title" />
 
         <receiver android:name=".widget.DishIngredientWidget">
             <intent-filter>

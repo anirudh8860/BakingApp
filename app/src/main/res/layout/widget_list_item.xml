@@ -10,13 +10,18 @@
         android:layout_height="wrap_content"
         android:id="@+id/dish_name"
         android:textSize="28sp"
-        android:textColor="#000000"/>
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textColor="@color/colorWhite"
+        android:background="@color/colorPrimary"
+        android:fontFamily="@font/blackjack"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/dish_ingredients"
         android:textSize="18sp"
-        android:textColor="#000000"/>
+        android:textStyle="italic"
+        android:fontFamily="@font/blackjack"/>
 
 </LinearLayout>

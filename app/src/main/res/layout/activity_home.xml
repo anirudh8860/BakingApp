@@ -18,7 +18,8 @@
         android:id="@+id/check_conn_btn"
         android:text="Retry"
         android:background="@color/colorPrimaryDark"
-        android:textColor="#FFFFFF"/>
+        android:textColor="#FFFFFF"
+        android:elevation="10dp"/>
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"

@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -19,6 +18,7 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 
+import me.anwarshahriar.calligrapher.Calligrapher;
 import simplegamer003.bakingapp.moshihelper.Dish;
 
 public class Home extends AppCompatActivity {
@@ -29,19 +29,32 @@ public class Home extends AppCompatActivity {
     private RecyclerView recyclerView;
     private TextView notConnectedText;
     private Button retryButton;
+    private boolean isTablet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        Calligrapher calligrapher = new Calligrapher(this);
+        calligrapher.setFont(this, "fonts/blackjack.ttf", true);
+
         recyclerView = (RecyclerView) findViewById(R.id.dish_recycler_view);
         notConnectedText = (TextView) findViewById(R.id.not_connected_text);
         retryButton = (Button) findViewById(R.id.check_conn_btn);
+        isTablet = this.getResources().getBoolean(R.bool.isTablet);
 
         displayCards();
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        if (isTablet)
+            recyclerView.setLayoutManager(new GridLayoutManager(
+                    this
+                    , 2));
+        else
+            recyclerView.setLayoutManager(new LinearLayoutManager(
+                    this
+                    , LinearLayoutManager.VERTICAL
+                    , false));
 
         retryButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,14 +101,8 @@ public class Home extends AppCompatActivity {
             String[] dishServingsArr = new String[dish.length];
 
             for (int i = 0; i < dish.length; i++){
-                Log.d("Dish", dish[i].toString());
                 dishNameArr[i] = dish[i].getName();
                 dishServingsArr[i] = String.valueOf(dish[i].getServings());
-                for(int j = 0; j < dish[i].getIngredients().length; j++)
-                    Log.d("Dish Ingredients", dish[i].getIngredients()[j].toString());
-
-                for(int k = 0; k < dish[i].getSteps().length; k++)
-                    Log.d("Dish Steps", dish[i].getSteps()[k].toString());
             }
 
             adapter = new DishViewAdapter(getApplicationContext(), dishNameArr, dishServingsArr, dish);

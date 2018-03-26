@@ -1,5 +1,6 @@
 package simplegamer003.bakingapp;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.CardView;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import me.anwarshahriar.calligrapher.Calligrapher;
 import simplegamer003.bakingapp.bakedish.DishIngredientAndSteps;
 import simplegamer003.bakingapp.moshihelper.Dish;
 
@@ -47,6 +49,8 @@ public class DishViewAdapter extends RecyclerView.Adapter<DishViewAdapter.DataVi
     @Override
     public DataViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = inflater.inflate(R.layout.card_list_item_dish, parent, false);
+        Calligrapher calligrapher = new Calligrapher(context);
+        calligrapher.setFont(itemView, "fonts/blackjack.ttf");
         return new DataViewHolder(itemView);
     }
 
@@ -54,6 +58,7 @@ public class DishViewAdapter extends RecyclerView.Adapter<DishViewAdapter.DataVi
     public void onBindViewHolder(DataViewHolder holder, final int position) {
         holder.dishName.setText(dishNameStr[position]);
         holder.dishServings.setText(dishServingsStr[position]);
+        holder.dishCardView.setBackgroundResource(getBgResource(dishNameStr[position]));
         holder.dishCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,8 +76,28 @@ public class DishViewAdapter extends RecyclerView.Adapter<DishViewAdapter.DataVi
 
     private void openDishDetails(int position) {
         Intent dishDetailsIntent = new Intent(context, DishIngredientAndSteps.class);
+        dishDetailsIntent.putExtra("dish_name", dishNameStr[position]);
         dishDetailsIntent.putExtra("dish_ingredients", dishes[position].getIngredients());
         dishDetailsIntent.putExtra("dish_steps", dishes[position].getSteps());
         context.startActivity(dishDetailsIntent);
+    }
+
+    private int getBgResource(String s) {
+        int res = 0;
+        switch (s){
+            case "Nutella Pie":
+                res =  R.drawable.nutella_pie;
+                break;
+            case "Brownies":
+                res = R.drawable.brownies;
+            break;
+            case "Yellow Cake":
+                res = R.drawable.yellow_cake;
+            break;
+            case "Cheesecake":
+                res = R.drawable.cheese_cake;
+            break;
+        }
+        return res;
     }
 }

@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import me.anwarshahriar.calligrapher.Calligrapher;
 import simplegamer003.bakingapp.R;
 import simplegamer003.bakingapp.moshihelper.Ingredients;
 import simplegamer003.bakingapp.moshihelper.Steps;
@@ -26,11 +27,16 @@ public class DishIngredientAndSteps extends AppCompatActivity {
     private Steps[] steps;
     private ViewGroup parent;
     String[] videoUrl, stepDescription;
+    String name;
+    private static Calligrapher calligrapher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dish_ingredients_and_steps);
+
+        calligrapher = new Calligrapher(this);
+        calligrapher.setFont(this, "fonts/blackjack.ttf", true);
 
         Intent intent = getIntent();
         ingredientsCard = (CardView) findViewById(R.id.ingredients_card);
@@ -41,6 +47,10 @@ public class DishIngredientAndSteps extends AppCompatActivity {
 
         ingredients = (Ingredients[]) intent.getSerializableExtra("dish_ingredients");
         steps = (Steps[]) intent.getSerializableExtra("dish_steps");
+        name = intent.getStringExtra("dish_name");
+        Log.d("Dish Name", name);
+
+        calligrapher.setFont(ingredientsList, "fonts/blackjack.ttf");
 
         createDishDataArray();
 
@@ -83,7 +93,7 @@ public class DishIngredientAndSteps extends AppCompatActivity {
         for (int i = 0; i < ingredients.length; i++)
             items[i] = ingredients[i].toString();
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.ingredients_list_item, items);
         ingredientsList.setAdapter(adapter);
     }
 
@@ -93,13 +103,12 @@ public class DishIngredientAndSteps extends AppCompatActivity {
             items[i] = steps[i].getShortDescription();
         }
 
-        DishStepsViewAdapter adapter = new DishStepsViewAdapter(this, items, steps);
+        DishStepsViewAdapter adapter = new DishStepsViewAdapter(this, items, steps, name);
         stepsRecyclerView.setAdapter(adapter);
         setListViewHeightBasedOnItems(ingredientsList, parent);
     }
 
     public static int setListViewHeightBasedOnItems(ListView listView, ViewGroup container) {
-
         ListAdapter listAdapter = listView.getAdapter();
 
         int numberOfItems = listAdapter.getCount();

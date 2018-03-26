@@ -38,6 +38,7 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
+import me.anwarshahriar.calligrapher.Calligrapher;
 import simplegamer003.bakingapp.R;
 import simplegamer003.bakingapp.moshihelper.Dish;
 import simplegamer003.bakingapp.moshihelper.Ingredients;
@@ -93,6 +94,9 @@ public class DishStepDetailFragment extends Fragment {
         prevNextFragment = stepDescView.findViewById(R.id.prev_next_layout);
         orientation = getActivity().getResources().getConfiguration().orientation;
         retryButton = stepDescView.findViewById(R.id.check_conn_btn_frag);
+
+        Calligrapher calligrapher = new Calligrapher(context);
+        calligrapher.setFont(stepDescView, "fonts/blackjack.ttf");
 
         setView(savedInstanceState);
 

@@ -60,11 +60,6 @@
                 android:layout_height="match_parent"
                 android:id="@+id/steps_recycler_view"/>
 
-            <View
-                android:layout_width="2dp"
-                android:layout_height="match_parent"
-                android:background="#A7A7A7"/>
-
             <FrameLayout
                 android:layout_marginLeft="10dp"
                 android:layout_width="fill_parent"

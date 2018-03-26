@@ -10,4 +10,7 @@
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
     <string name="refresh_unsuccessful">Cannot refresh at this time</string>
+    <string name="servings_str">Servings:</string>
+    <string name="dish_steps_title">Dish Steps</string>
+    <string name="dish_ingredients_steps_title">Dish Ingredients With Steps</string>
 </resources>
