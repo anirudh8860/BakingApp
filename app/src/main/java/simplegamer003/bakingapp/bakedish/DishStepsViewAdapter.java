@@ -91,9 +91,6 @@ public class DishStepsViewAdapter extends RecyclerView.Adapter<DishStepsViewAdap
             stepDescription[i] = steps[i].getDescription();
             if (videoUrl[i].equals(null) || videoUrl[i].equals(""))
                 videoUrl[i] = "0";
-
-            Log.d("Video " + i, videoUrl[i]);
-            Log.d("Step Description " + i, stepDescription[i]);
         }
 
         Intent dishStepIntent = new Intent(context, DishStepDetail.class);

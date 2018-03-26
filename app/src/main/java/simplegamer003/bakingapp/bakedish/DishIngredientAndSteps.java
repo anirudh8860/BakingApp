@@ -48,7 +48,6 @@ public class DishIngredientAndSteps extends AppCompatActivity {
         ingredients = (Ingredients[]) intent.getSerializableExtra("dish_ingredients");
         steps = (Steps[]) intent.getSerializableExtra("dish_steps");
         name = intent.getStringExtra("dish_name");
-        Log.d("Dish Name", name);
 
         calligrapher.setFont(ingredientsList, "fonts/blackjack.ttf");
 
@@ -82,9 +81,6 @@ public class DishIngredientAndSteps extends AppCompatActivity {
             stepDescription[i] = steps[i].getDescription();
             if (videoUrl[i].equals(null) || videoUrl[i].equals(""))
                 videoUrl[i] = "0";
-
-            Log.d("Video " + i, videoUrl[i]);
-            Log.d("Step Description " + i, stepDescription[i]);
         }
     }
 

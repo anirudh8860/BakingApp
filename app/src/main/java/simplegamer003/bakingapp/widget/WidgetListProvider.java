@@ -79,8 +79,6 @@ public class WidgetListProvider implements RemoteViewsService.RemoteViewsFactory
             ingredientsStr += "* " + ingredients.getQuantity() + ingredients.getMeasure() + " " + ingredients.getIngredient() + "\n";
         }
 
-        Log.d("Ingredients", ingredientsStr);
-
         remoteView.setTextViewText(R.id.dish_name, dishes[position].getName());
         remoteView.setTextViewText(R.id.dish_ingredients, ingredientsStr);
 
