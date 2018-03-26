@@ -99,10 +99,12 @@ public class Home extends AppCompatActivity {
             Dish[] dish = gson.fromJson(s, Dish[].class);
             String[] dishNameArr = new String[dish.length];
             String[] dishServingsArr = new String[dish.length];
+            String[] dishImageUrlArr = new String[dish.length];
 
             for (int i = 0; i < dish.length; i++){
                 dishNameArr[i] = dish[i].getName();
                 dishServingsArr[i] = String.valueOf(dish[i].getServings());
+                dishImageUrlArr[i] = dish[i].getImageUrl();
             }
 
             adapter = new DishViewAdapter(getApplicationContext(), dishNameArr, dishServingsArr, dish);

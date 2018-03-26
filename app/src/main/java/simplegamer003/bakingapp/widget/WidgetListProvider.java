@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -25,7 +26,6 @@ public class WidgetListProvider implements RemoteViewsService.RemoteViewsFactory
 
     private Context context;
     private Dish[] dishes;
-    private ArrayList<Dish> dishArrayList;
 
     public WidgetListProvider(Context context, Intent intent) {
         this.context = context;
@@ -66,7 +66,7 @@ public class WidgetListProvider implements RemoteViewsService.RemoteViewsFactory
 
     @Override
     public int getCount() {
-        return dishes.length;
+        return 1;
     }
 
     @Override

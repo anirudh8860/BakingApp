@@ -5,10 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/dish_linear_layout">
-    <fragment
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/dish_step_fragment"
-        android:layout_weight="1"
-        class="simplegamer003.bakingapp.bakedish.DishStepDetailFragment"/>
+        android:id="@+id/dish_step_fragment"/>
 </LinearLayout>

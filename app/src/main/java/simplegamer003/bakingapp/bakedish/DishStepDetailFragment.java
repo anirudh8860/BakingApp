@@ -49,23 +49,23 @@ import simplegamer003.bakingapp.moshihelper.Ingredients;
 public class DishStepDetailFragment extends Fragment {
 
     private TextView stepDesc;
-    private String[] videoUrl, stepDescription;
-    private int position, finalposition, windowIndex, resumeWindow;
+    private String[] videoUrl, stepDescription, thumbUrl;
+    private int position, resumeWindow, finalposition;
     private DishStepDetail dishStepDetail;
     private DishIngredientAndSteps ingredientAndSteps;
     private Button prev, next, retryButton;
     private SimpleExoPlayer exoPlayer;
     private SimpleExoPlayerView exoPlayerView;
-    private long playbackPos, resumePosition;
-    private boolean playWhenReady, isTablet;
+    private long playbackPos;
+    private boolean playWhenReady, isTablet, exoPlayerFullscreen = false;
     private ComponentListener componentListener;
     private View stepDescView;
     private RelativeLayout prevNextFragment;
     private static final String positionKey = "position";
     private static final String STATE_RESUME_WINDOW = "resumeWindow";
-    private static final String STATE_RESUME_POSITION = "resumePosition";
+    private static final String STATE_RESUME_POSITION = "playbackPos";
     private static final String STATE_PLAYER_FULLSCREEN = "playerFullscreen";
-    private boolean exoPlayerFullscreen = false;
+    private static final String STATE_PLAYER_IS_READY = "playerReady";
     private Dialog fullScreenDialog;
     private ImageButton fullScreenBtn;
     private FrameLayout frameLayout;
@@ -167,19 +167,21 @@ public class DishStepDetailFragment extends Fragment {
                     if (savedInstanceState != null) {
                         position = savedInstanceState.getInt(positionKey);
                         resumeWindow = savedInstanceState.getInt(STATE_RESUME_WINDOW);
-                        resumePosition = savedInstanceState.getLong(STATE_RESUME_POSITION);
+                        playbackPos = savedInstanceState.getLong(STATE_RESUME_POSITION);
                         exoPlayerFullscreen = savedInstanceState.getBoolean(STATE_PLAYER_FULLSCREEN);
+                        playWhenReady = savedInstanceState.getBoolean(STATE_PLAYER_IS_READY);
                     }
                     videoUrl = ingredientAndSteps.videoUrl;
                     stepDescription = ingredientAndSteps.stepDescription;
+                    thumbUrl = ingredientAndSteps.thumbUrl;
                     finalposition = stepDescription.length - 1;
                     checkForFirstPosition(position);
                     checkForFinalPosition(position);
                     stepDesc.setText(stepDescription[position]);
                     componentListener = new ComponentListener();
-                    showOrHideVideo(videoUrl[position]);
-                    initFullScreenDialog();
+                    showOrHideVideo(videoUrl[position], thumbUrl[position]);
                     initFullScreenButton();
+                    initFullScreenDialog();
                     if (orientation == Configuration.ORIENTATION_LANDSCAPE)
                         openFullScreenDialog();
                 }
@@ -193,23 +195,26 @@ public class DishStepDetailFragment extends Fragment {
                     if (savedInstanceState != null) {
                         position = savedInstanceState.getInt(positionKey);
                         resumeWindow = savedInstanceState.getInt(STATE_RESUME_WINDOW);
-                        resumePosition = savedInstanceState.getLong(STATE_RESUME_POSITION);
+                        playbackPos = savedInstanceState.getLong(STATE_RESUME_POSITION);
                         exoPlayerFullscreen = savedInstanceState.getBoolean(STATE_PLAYER_FULLSCREEN);
+                        playWhenReady = savedInstanceState.getBoolean(STATE_PLAYER_IS_READY);
                     } else {
                         position = dishStepDetail.position;
                     }
                     videoUrl = dishStepDetail.videoUrl;
                     stepDescription = dishStepDetail.stepDescription;
+                    thumbUrl = dishStepDetail.thumbnailUrl;
                     finalposition = stepDescription.length - 1;
                     checkForFirstPosition(position);
                     checkForFinalPosition(position);
                     stepDesc.setText(stepDescription[position]);
                     componentListener = new ComponentListener();
-                    showOrHideVideo(videoUrl[position]);
-                    initFullScreenDialog();
+                    showOrHideVideo(videoUrl[position], thumbUrl[position]);
                     initFullScreenButton();
+                    initFullScreenDialog();
                     if (orientation == Configuration.ORIENTATION_LANDSCAPE)
                         openFullScreenDialog();
+
                 }
             }, 100);
         }
@@ -225,7 +230,6 @@ public class DishStepDetailFragment extends Fragment {
     }
 
     private void initFullScreenDialog() {
-
         fullScreenDialog = new Dialog(getContext(), android.R.style.Theme_Black_NoTitleBar_Fullscreen) {
             public void onBackPressed() {
                 if (exoPlayerFullscreen) {
@@ -238,7 +242,6 @@ public class DishStepDetailFragment extends Fragment {
 
 
     private void openFullScreenDialog() {
-
         ((ViewGroup) exoPlayerView.getParent()).removeView(exoPlayerView);
         fullScreenDialog.addContentView(exoPlayerView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         fullScreenBtn.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.fullscreen_exit_white));
@@ -248,6 +251,8 @@ public class DishStepDetailFragment extends Fragment {
 
 
     private void closeFullScreenDialog() {
+        Log.d("BackPressed", "true");
+
         ViewGroup container = (ViewGroup) exoPlayerView.getParent();
         container.removeView(exoPlayerView);
         LinearLayout layout = (LinearLayout) stepDescView.findViewById(R.id.player_linear_layout);
@@ -271,7 +276,6 @@ public class DishStepDetailFragment extends Fragment {
 
 
     private void initFullScreenButton() {
-
         PlaybackControlView controlView = exoPlayerView.findViewById(R.id.exo_controller);
         fullScreenBtn = controlView.findViewById(R.id.exo_fullscreen_button);
         fullScreenBtn.setOnClickListener(new View.OnClickListener() {
@@ -307,14 +311,14 @@ public class DishStepDetailFragment extends Fragment {
         exoPlayer.addAudioDebugListener(componentListener);
         exoPlayer.prepare(mediaSource, false, false);
         exoPlayer.setPlayWhenReady(playWhenReady);
-        exoPlayer.seekTo(windowIndex, playbackPos);
+        exoPlayer.seekTo(resumeWindow, playbackPos);
 
     }
 
     private void releasePlayer(){
         if (exoPlayer != null){
             playbackPos = exoPlayer.getCurrentPosition();
-            windowIndex = exoPlayer.getCurrentWindowIndex();
+            resumeWindow = exoPlayer.getCurrentWindowIndex();
             playWhenReady = exoPlayer.getPlayWhenReady();
             exoPlayer.removeListener(componentListener);
             exoPlayer.release();
@@ -326,6 +330,10 @@ public class DishStepDetailFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(positionKey, position);
+        outState.putInt(STATE_RESUME_WINDOW, resumeWindow);
+        outState.putLong(STATE_RESUME_POSITION, playbackPos);
+        outState.putBoolean(STATE_PLAYER_IS_READY, playWhenReady);
+        outState.putBoolean(STATE_PLAYER_FULLSCREEN, exoPlayerFullscreen);
     }
 
     private void getPrev(){
@@ -336,7 +344,7 @@ public class DishStepDetailFragment extends Fragment {
         checkForFinalPosition(position);
 
         stepDesc.setText(stepDescription[position]);
-        showOrHideVideo(videoUrl[position]);
+        showOrHideVideo(videoUrl[position], thumbUrl[position]);
     }
 
     private void getNext() {
@@ -347,7 +355,7 @@ public class DishStepDetailFragment extends Fragment {
         checkForFinalPosition(position);
 
         stepDesc.setText(stepDescription[position]);
-        showOrHideVideo(videoUrl[position]);
+        showOrHideVideo(videoUrl[position], thumbUrl[position]);
     }
 
     private void checkForFirstPosition(int position){
@@ -364,10 +372,15 @@ public class DishStepDetailFragment extends Fragment {
             next.setEnabled(true);
     }
 
-    private void showOrHideVideo(String videoUrlStr){
+    private void showOrHideVideo(String videoUrlStr, String thumbUrlStr){
         boolean noVideo = checkForNoVideo(videoUrlStr);
-        if (noVideo)
+        boolean noThumb = checkForNoVideo(thumbUrlStr);
+        if (noVideo && noThumb)
             exoPlayerView.setVisibility(View.GONE);
+        else if (noVideo){
+            exoPlayerView.setVisibility(View.VISIBLE);
+            initializePlayer(Uri.parse(thumbUrlStr));
+        }
         else {
             exoPlayerView.setVisibility(View.VISIBLE);
             initializePlayer(Uri.parse(videoUrlStr));
@@ -402,14 +415,15 @@ public class DishStepDetailFragment extends Fragment {
                 public void run() {
                     initFullScreenButton();
                     initFullScreenDialog();
-                    showOrHideVideo(videoUrl[position]);
-
+                    showOrHideVideo(videoUrl[position], thumbUrl[position]);
+                    /*
                     if (exoPlayerFullscreen) {
                         ((ViewGroup) exoPlayerView.getParent()).removeView(exoPlayerView);
                         fullScreenDialog.addContentView(exoPlayerView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                         fullScreenBtn.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.fullscreen_exit_white));
                         fullScreenDialog.show();
                     }
+                    */
                 }
             }, 100);
         }
@@ -423,7 +437,7 @@ public class DishStepDetailFragment extends Fragment {
         super.onPause();
         if (exoPlayerView != null && exoPlayerView.getPlayer() != null) {
             resumeWindow = exoPlayerView.getPlayer().getCurrentWindowIndex();
-            resumePosition = Math.max(0, exoPlayerView.getPlayer().getContentPosition());
+            playbackPos = Math.max(0, exoPlayerView.getPlayer().getContentPosition());
             releasePlayer();
         }
 
@@ -440,7 +454,7 @@ public class DishStepDetailFragment extends Fragment {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        showOrHideVideo(videoUrl[position]);
+                        showOrHideVideo(videoUrl[position], thumbUrl[position]);
                     }
                 }, 100);
             }

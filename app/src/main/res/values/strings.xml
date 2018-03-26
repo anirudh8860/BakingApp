@@ -13,4 +13,5 @@
     <string name="servings_str">Servings:</string>
     <string name="dish_steps_title">Dish Steps</string>
     <string name="dish_ingredients_steps_title">Dish Ingredients With Steps</string>
+    <string name="select_dish">SELECT DISH</string>
 </resources>

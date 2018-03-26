@@ -13,6 +13,12 @@
         tools:context="simplegamer003.bakingapp.bakedish.DishIngredientAndSteps"
         android:focusableInTouchMode="true">
 
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/dish_image"
+            android:layout_above="@+id/ingredients_card"/>
+
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

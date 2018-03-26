@@ -22,7 +22,7 @@
         <activity
             android:label="@string/dish_ingredients_steps_title"
             android:name=".bakedish.DishIngredientAndSteps"
-            android:configChanges="orientation" />
+            android:configChanges="orientation|screenSize|layoutDirection"/>
 
         <activity
             android:name=".bakedish.DishStepDetail"

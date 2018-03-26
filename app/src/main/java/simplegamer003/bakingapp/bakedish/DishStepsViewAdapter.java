@@ -85,18 +85,23 @@ public class DishStepsViewAdapter extends RecyclerView.Adapter<DishStepsViewAdap
     private void openDishStep(int position){
         String[] videoUrl = new String[steps.length];
         String[] stepDescription = new String[steps.length];
+        String[] thumbnailUrl = new String[steps.length];
 
         for (int i = 0; i < steps.length; i++){
             videoUrl[i] = steps[i].getVideoURL();
             stepDescription[i] = steps[i].getDescription();
+            thumbnailUrl[i] = steps[i].getThumbnailURL();
             if (videoUrl[i].equals(null) || videoUrl[i].equals(""))
                 videoUrl[i] = "0";
+            if (thumbnailUrl[i].equals(null) || thumbnailUrl[i].equals(""))
+                thumbnailUrl[i] = "0";
         }
 
         Intent dishStepIntent = new Intent(context, DishStepDetail.class);
         dishStepIntent.putExtra("dish_name", name);
         dishStepIntent.putExtra("position", position);
         dishStepIntent.putExtra("video_url", videoUrl);
+        dishStepIntent.putExtra("thumb_url", thumbnailUrl);
         dishStepIntent.putExtra("step_description", stepDescription);
         context.startActivity(dishStepIntent);
     }

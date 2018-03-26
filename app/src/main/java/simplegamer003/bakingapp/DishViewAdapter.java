@@ -21,7 +21,7 @@ import simplegamer003.bakingapp.moshihelper.Dish;
 public class DishViewAdapter extends RecyclerView.Adapter<DishViewAdapter.DataViewHolder>{
 
     private Context context;
-    private String[] dishNameStr, dishServingsStr;
+    private String[] dishNameStr, dishServingsStr, dishImageUrl;
     private LayoutInflater inflater;
     private Dish[] dishes;
 
@@ -43,6 +43,7 @@ public class DishViewAdapter extends RecyclerView.Adapter<DishViewAdapter.DataVi
         this.dishNameStr = dishNameStr;
         this.dishServingsStr = dishServingsStr;
         this.dishes = dishes;
+        this.dishImageUrl = dishImageUrl;
         inflater = LayoutInflater.from(context);
     }
 
@@ -79,6 +80,7 @@ public class DishViewAdapter extends RecyclerView.Adapter<DishViewAdapter.DataVi
         dishDetailsIntent.putExtra("dish_name", dishNameStr[position]);
         dishDetailsIntent.putExtra("dish_ingredients", dishes[position].getIngredients());
         dishDetailsIntent.putExtra("dish_steps", dishes[position].getSteps());
+        dishDetailsIntent.putExtra("dish_image", dishes[position].getImageUrl());
         context.startActivity(dishDetailsIntent);
     }
 
