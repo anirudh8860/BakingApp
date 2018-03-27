@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.PopupWindow;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -26,10 +27,12 @@ public class WidgetListProvider implements RemoteViewsService.RemoteViewsFactory
 
     private Context context;
     private Dish[] dishes;
+    private String dishName;
 
     public WidgetListProvider(Context context, Intent intent) {
         this.context = context;
         dishes = getDishFromJson(context);
+        dishName = intent.getStringExtra("dish_name_widget");
     }
 
     private Dish[] getDishFromJson(Context context){
@@ -52,7 +55,6 @@ public class WidgetListProvider implements RemoteViewsService.RemoteViewsFactory
 
     @Override
     public void onCreate() {
-
     }
 
     @Override
@@ -74,12 +76,20 @@ public class WidgetListProvider implements RemoteViewsService.RemoteViewsFactory
         RemoteViews remoteView = new RemoteViews(context.getPackageName(), R.layout.widget_list_item);
 
         String ingredientsStr = "";
-        for (int j = 0; j < dishes[position].getIngredients().length; j++) {
-            Ingredients ingredients = dishes[position].getIngredients()[j];
+
+        int pos = 0;
+        for (int i = 0; i < dishes.length; i++){
+            if (dishes[i].getName().equals(dishName)) {
+                pos = i;
+                break;
+            }
+        }
+        for (int j = 0; j < dishes[pos].getIngredients().length; j++) {
+            Ingredients ingredients = dishes[pos].getIngredients()[j];
             ingredientsStr += "* " + ingredients.getQuantity() + ingredients.getMeasure() + " " + ingredients.getIngredient() + "\n";
         }
 
-        remoteView.setTextViewText(R.id.dish_name, dishes[position].getName());
+        remoteView.setTextViewText(R.id.dish_name, dishes[pos].getName());
         remoteView.setTextViewText(R.id.dish_ingredients, ingredientsStr);
 
         return remoteView;

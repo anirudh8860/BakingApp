@@ -22,7 +22,6 @@
         android:id="@+id/dish_ingredients"
         android:textSize="18sp"
         android:textStyle="italic"
-        android:fontFamily="@font/blackjack"
-        android:visibility="gone"/>
+        android:fontFamily="@font/blackjack"/>
 
 </LinearLayout>
