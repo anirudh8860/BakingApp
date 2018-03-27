@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -37,11 +38,10 @@ import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.squareup.picasso.Picasso;
 
 import me.anwarshahriar.calligrapher.Calligrapher;
 import simplegamer003.bakingapp.R;
-import simplegamer003.bakingapp.moshihelper.Dish;
-import simplegamer003.bakingapp.moshihelper.Ingredients;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -68,6 +68,7 @@ public class DishStepDetailFragment extends Fragment {
     private static final String STATE_PLAYER_IS_READY = "playerReady";
     private Dialog fullScreenDialog;
     private ImageButton fullScreenBtn;
+    private ImageView thumbnailImage;
     private FrameLayout frameLayout;
     private LayoutInflater inflater;
     private int orientation;
@@ -94,6 +95,7 @@ public class DishStepDetailFragment extends Fragment {
         prevNextFragment = stepDescView.findViewById(R.id.prev_next_layout);
         orientation = getActivity().getResources().getConfiguration().orientation;
         retryButton = stepDescView.findViewById(R.id.check_conn_btn_frag);
+        thumbnailImage = stepDescView.findViewById(R.id.thumbnail_image);
 
         Calligrapher calligrapher = new Calligrapher(context);
         calligrapher.setFont(stepDescView, "fonts/blackjack.ttf");
@@ -179,7 +181,13 @@ public class DishStepDetailFragment extends Fragment {
                     checkForFinalPosition(position);
                     stepDesc.setText(stepDescription[position]);
                     componentListener = new ComponentListener();
-                    showOrHideVideo(videoUrl[position], thumbUrl[position]);
+                    showOrHideThumbnail(thumbUrl[position], videoUrl[position]);
+                    thumbnailImage.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            setVideoVisibility(thumbUrl[position]);
+                        }
+                    });
                     initFullScreenButton();
                     initFullScreenDialog();
                     if (orientation == Configuration.ORIENTATION_LANDSCAPE)
@@ -209,7 +217,13 @@ public class DishStepDetailFragment extends Fragment {
                     checkForFinalPosition(position);
                     stepDesc.setText(stepDescription[position]);
                     componentListener = new ComponentListener();
-                    showOrHideVideo(videoUrl[position], thumbUrl[position]);
+                    showOrHideThumbnail(thumbUrl[position], videoUrl[position]);
+                    thumbnailImage.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            setVideoVisibility(thumbUrl[position]);
+                        }
+                    });
                     initFullScreenButton();
                     initFullScreenDialog();
                     if (orientation == Configuration.ORIENTATION_LANDSCAPE)
@@ -306,6 +320,7 @@ public class DishStepDetailFragment extends Fragment {
                         uri
                         , null
                         , null);
+
         exoPlayer.addListener(componentListener);
         exoPlayer.addVideoDebugListener(componentListener);
         exoPlayer.addAudioDebugListener(componentListener);
@@ -344,7 +359,7 @@ public class DishStepDetailFragment extends Fragment {
         checkForFinalPosition(position);
 
         stepDesc.setText(stepDescription[position]);
-        showOrHideVideo(videoUrl[position], thumbUrl[position]);
+        showOrHideThumbnail(thumbUrl[position], videoUrl[position]);
     }
 
     private void getNext() {
@@ -355,7 +370,15 @@ public class DishStepDetailFragment extends Fragment {
         checkForFinalPosition(position);
 
         stepDesc.setText(stepDescription[position]);
-        showOrHideVideo(videoUrl[position], thumbUrl[position]);
+        showOrHideThumbnail(thumbUrl[position], videoUrl[position]);
+    }
+
+    private void setVideoVisibility(String videoUrlStr) {
+        boolean noVideo = checkForNoUrl(videoUrlStr);
+        if (!noVideo){
+            thumbnailImage.setVisibility(View.GONE);
+            exoPlayerView.setVisibility(View.VISIBLE);
+        }
     }
 
     private void checkForFirstPosition(int position){
@@ -372,23 +395,33 @@ public class DishStepDetailFragment extends Fragment {
             next.setEnabled(true);
     }
 
-    private void showOrHideVideo(String videoUrlStr, String thumbUrlStr){
-        boolean noVideo = checkForNoVideo(videoUrlStr);
-        boolean noThumb = checkForNoVideo(thumbUrlStr);
-        if (noVideo && noThumb)
-            exoPlayerView.setVisibility(View.GONE);
-        else if (noVideo){
-            exoPlayerView.setVisibility(View.VISIBLE);
-            initializePlayer(Uri.parse(thumbUrlStr));
+    private void showOrHideThumbnail(String thumbUrlStr, String videoUrlStr){
+        boolean noThumb = checkForNoUrl(thumbUrlStr);
+        if (noThumb){
+            thumbnailImage.setVisibility(View.GONE);
+            showOrHideVideo(videoUrlStr);
         }
+        else{
+            thumbnailImage.setVisibility(View.VISIBLE);
+            exoPlayerView.setVisibility(View.GONE);
+            Picasso.get()
+                    .load(Uri.parse(thumbUrlStr))
+                    .into(thumbnailImage);
+        }
+    }
+
+    private void showOrHideVideo(String videoUrlStr){
+        boolean noVideo = checkForNoUrl(videoUrlStr);
+        if (noVideo)
+            exoPlayerView.setVisibility(View.GONE);
         else {
             exoPlayerView.setVisibility(View.VISIBLE);
             initializePlayer(Uri.parse(videoUrlStr));
         }
     }
 
-    private boolean checkForNoVideo(String videoUrlStr) {
-        if (videoUrlStr.equals("0"))
+    private boolean checkForNoUrl(String url) {
+        if (url.equals("0"))
             return true;
         else
             return false;
@@ -415,7 +448,7 @@ public class DishStepDetailFragment extends Fragment {
                 public void run() {
                     initFullScreenButton();
                     initFullScreenDialog();
-                    showOrHideVideo(videoUrl[position], thumbUrl[position]);
+                    showOrHideThumbnail(thumbUrl[position], videoUrl[position]);
                     /*
                     if (exoPlayerFullscreen) {
                         ((ViewGroup) exoPlayerView.getParent()).removeView(exoPlayerView);
@@ -454,7 +487,7 @@ public class DishStepDetailFragment extends Fragment {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        showOrHideVideo(videoUrl[position], thumbUrl[position]);
+                        showOrHideThumbnail(thumbUrl[position], videoUrl[position]);
                     }
                 }, 100);
             }

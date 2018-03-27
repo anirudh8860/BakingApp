@@ -4,12 +4,19 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import me.anwarshahriar.calligrapher.Calligrapher;
 import simplegamer003.bakingapp.bakedish.DishIngredientAndSteps;
@@ -60,7 +67,20 @@ public class DishViewAdapter extends RecyclerView.Adapter<DishViewAdapter.DataVi
     public void onBindViewHolder(DataViewHolder holder, final int position) {
         holder.dishName.setText(dishNameStr[position]);
         holder.dishServings.setText(dishServingsStr[position]);
-        holder.dishCardView.setBackgroundResource(getBgResource(dishNameStr[position]));
+        if (dishes[position].getImageUrl() == null || dishes[position].getImageUrl().equals("")) {
+            holder.dishCardView.setBackgroundResource(getBgResource(dishNameStr[position]));
+        }
+        else {
+            URL url = null;
+            try {
+                url = new URL(dishes[holder.getAdapterPosition()].getImageUrl());
+                Bitmap imageBitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                BitmapDrawable drawable = new BitmapDrawable(context.getResources(), imageBitmap);
+                holder.dishCardView.setBackground(drawable);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         holder.dishCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

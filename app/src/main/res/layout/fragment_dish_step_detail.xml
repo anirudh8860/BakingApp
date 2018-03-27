@@ -18,6 +18,13 @@
             android:id="@+id/player_linear_layout"
             android:orientation="vertical">
 
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/thumbnail_image"
+                android:visibility="gone"
+                android:layout_marginBottom="30sp"/>
+
             <com.google.android.exoplayer2.ui.SimpleExoPlayerView
                 android:id="@+id/step_video_player"
                 android:layout_width="match_parent"
