@@ -16,6 +16,6 @@ public class DishIngredientService extends RemoteViewsService {
 
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
-        return new WidgetListProvider(this.getApplicationContext(), intent);
+        return new IngredientWidgetListProvider(this.getApplicationContext(), intent);
     }
 }

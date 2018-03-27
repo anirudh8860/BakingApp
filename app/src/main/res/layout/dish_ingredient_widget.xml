@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFF"
@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:id="@+id/ingredient_list_view_widget"
         android:loopViews="true"
-        android:gravity="center" />
+        android:gravity="center"/>
 
     <TextView
         android:id="@+id/empty_view"
@@ -23,4 +23,4 @@
         android:textSize="20sp"
         android:visibility="gone" />
 
-</LinearLayout>
+</RelativeLayout>

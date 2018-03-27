@@ -3,6 +3,7 @@ package simplegamer003.bakingapp.widget;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.PopupWindow;
@@ -19,17 +20,20 @@ import simplegamer003.bakingapp.R;
 import simplegamer003.bakingapp.moshihelper.Dish;
 import simplegamer003.bakingapp.moshihelper.Ingredients;
 
+import static android.content.Context.MODE_PRIVATE;
+
 /**
  * Created by anirudhsohil on 25/03/18.
  */
 
-public class WidgetListProvider implements RemoteViewsService.RemoteViewsFactory {
+public class IngredientWidgetListProvider implements RemoteViewsService.RemoteViewsFactory {
 
     private Context context;
     private Dish[] dishes;
     private String dishName;
+    private static final String PREF_DISH = "dish_pref";
 
-    public WidgetListProvider(Context context, Intent intent) {
+    public IngredientWidgetListProvider(Context context, Intent intent) {
         this.context = context;
         dishes = getDishFromJson(context);
         dishName = intent.getStringExtra("dish_name_widget");
@@ -59,6 +63,8 @@ public class WidgetListProvider implements RemoteViewsService.RemoteViewsFactory
 
     @Override
     public void onDataSetChanged() {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREF_DISH, MODE_PRIVATE);
+        dishName = sharedPreferences.getString("dish_name", "Nutella Pie");
     }
 
     @Override
